@@ -1,36 +1,36 @@
-const { Schema, model } = require("mongoose");
+const { model, Schema } = require("mongoose");
 
-const deliveryAddressSchema = Schema(
+const deliveryAddressSchema = new Schema(
   {
-    nama: {
+    name: {
       type: String,
-      required: [true, "Nama alamat harus diisi"],
-      maxlength: [255, "Panjang maksimal nama alamat adalah 255 karakter"],
+      required: [true, "Nama alamat harus di isi"],
+      maxlength: [255, "panjang maksimal nama 255 karakter"],
     },
     kelurahan: {
       type: String,
-      required: [true, "Kelurahan harus diisi"],
-      maxlength: [255, "Panjang maksimal kelurahan adalah 255 karakter"],
+      required: [true, "kelurahan alamat harus di isi"],
+      maxlength: [255, "panjang maksimal kelurahan 255 karakter"],
     },
     kecamatan: {
       type: String,
-      required: [true, "Kecamatan harus diisi"],
-      maxlength: [255, "Panjang maksimal kecamatan adalah 255 karakter"],
+      required: [true, "kecamatan alamat harus di isi"],
+      maxlength: [255, "panjang maksimal kecamatan 255 karakter"],
     },
     kabupaten: {
       type: String,
-      required: [true, "Kabupaten harus diisi"],
-      maxlength: [255, "Panjang maksimal kabupaten adalah 255 karakter"],
+      required: [true, "kabupaten alamat harus di isi"],
+      maxlength: [255, "panjang maksimal kabupaten 255 karakter"],
     },
     provinsi: {
       type: String,
-      required: [true, "Provinsi harus diisi"],
-      maxlength: [255, "Panjang maksimal provinsi adalah 255 karakter"],
+      required: [true, "provinsi alamat harus di isi"],
+      maxlength: [255, "panjang maksimal provinsi 255 karakter"],
     },
     detail: {
       type: String,
-      required: [true, "Detail alamat harus diisi"],
-      maxlength: [1000, "Panjang maksimal detail alamat adalah 1000 karakter"],
+      required: [true, "detail alamat harus di isi"],
+      maxlength: [1000, "panjang maksimal detail 1000 karakter"],
     },
     user: {
       type: Schema.Types.ObjectId,

@@ -17,8 +17,7 @@ const update = async (req, res, next) => {
         qty: item.qty,
       };
     });
-
-    await CartItem.deleteMany({ user: req.user._id });
+    // await CartItem.deleteMany({user: req.user._id});
     await CartItem.bulkWrite(
       cartItems.map((item) => {
         return {
@@ -33,37 +32,33 @@ const update = async (req, res, next) => {
         };
       })
     );
-    return res.json(cartItems);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
+    return res.status(200).json(cartItems);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
         error: 1,
-        message: error.message,
-        fields: error.errors,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
 const index = async (req, res, next) => {
   try {
     let items = await CartItem.find({ user: req.user._id }).populate("product");
-
-    return res.json(items);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
+    return res.status(200).json(items);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
         error: 1,
-        message: error.message,
-        fields: error.errors,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
-module.exports = {
-  update,
-  index,
-};
+module.exports = { update, index };

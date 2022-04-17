@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { model, Schema } = mongoose;
 
-const invoiceSchema = Schema(
+const invoiceSchema = new Schema(
   {
     sub_total: {
       type: Number,
@@ -12,11 +12,11 @@ const invoiceSchema = Schema(
       required: [true, "delivery_fee harus diisi"],
     },
     delivery_address: {
-      provinsi: { type: String, require: [true, "provinsi harus diisi."] },
-      kabupaten: { type: String, require: [true, "kabupaten harus diisi."] },
-      kecamatan: { type: String, require: [true, "kecamatan harus diisi."] },
-      kelurahan: { type: String, require: [true, "kelurahan harus diisi."] },
-      detail: { type: String },
+      provinsi: { type: String, required: [true, "provinsi harus diisi"] },
+      kabupaten: { type: String, required: [true, "kabupaten harus diisi"] },
+      kecamatan: { type: String, required: [true, "kecamatan harus diisi"] },
+      kelurahan: { type: String, required: [true, "kelurahan harus diisi"] },
+      default: { type: String },
     },
     total: {
       type: Number,

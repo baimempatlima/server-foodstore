@@ -1,20 +1,20 @@
 const CartItem = require("../cart-item/model");
-const Delivery_address = require("../deliveryAddress/model");
-const Order = require("./model");
+const DeliveryAddress = require("../deliveryAddress/model");
+const Order = require("../order/model");
 const { Types } = require("mongoose");
 const OrderItem = require("../order-item/model");
 
 const store = async (req, res, next) => {
   try {
     let { delivery_fee, delivery_address } = req.body;
-    let items = await CartItem.find({ user: req.user._id }.populate("product"));
+    let items = await CartItem.find({ user: req.user._id }).populate("product");
     if (!items) {
-      return res.json({
+      return res.status(200).json({
         error: 1,
-        message: "You're not create order because you have not item in cart",
+        message: "you are not create order because you have not items in cart",
       });
     }
-    let address = await Delivery_address.findById(delivery_address);
+    let address = await DeliveryAddress.findById(delivery_address);
     let order = new Order({
       _id: new Types.ObjectId(),
       status: "waiting_payment",
@@ -41,41 +41,61 @@ const store = async (req, res, next) => {
     orderItems.forEach((item) => order.order_items.push(item));
     order.save();
     await CartItem.deleteMany({ user: req.user._id });
-    return res.json(order);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
-        error: 1,
-        message: error.message,
-        fields: error.errors,
+    return res.status(200).json(order);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
+        erros: 1,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
 const index = async (req, res, next) => {
   try {
-    let { skip = 0, limit = 10 } = req.query;
-    let count = await Order.find({ user: req.user._id }).countDocuments;
-    let orders = await Order.find({ user: req.user._id }).skip(parseInt(skip)).limit(parseInt(limit)).populate("order_items").sort("-createdAt");
-    return res.json({
-      data: orders.map((order) => order.toJSON({ virtual: true })),
+    // let {skip=0, limit = 10}= req.query;
+    let count = await Order.find({ user: req.user_id }).countDocuments();
+    let orders = await Order.find({ user: req.user._id })
+      // .skip(parseInt(skip))
+      // .limit(parseInt(limit))
+      .populate("order_items")
+      .sort("-createdAt");
+    return res.status(200).json({
+      data: orders.map((order) => order.toJSON({ virtuals: true })),
       count,
     });
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
-        error: 1,
-        message: error.message,
-        fields: error.errors,
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
+        erros: 1,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
-module.exports = {
-  store,
-  index,
+const show = async (req, res, next) => {
+  try {
+    // let {skip=0, limit = 10}= req.query;
+    let { id } = req.params;
+    // let count = await Order.find({user: req.user_id}).countDocuments();
+    let orders = await Order.findById(id).populate("order_items").sort("-createdAt");
+    return res.status(200).json(orders);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
+        erros: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+    next(err);
+  }
 };
+
+module.exports = { store, index, show };

@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const { model, Schema } = mongoose;
-const AutoIncrement = require("mongoose-sequence")(mongoose);
+const AuthoIncrement = require("mongoose-sequence")(mongoose);
+const Invoice = require("../invoice/model");
 
-const orderSchema = Schema(
+const orderSchema = new Schema(
   {
     status: {
       type: String,
@@ -14,24 +15,22 @@ const orderSchema = Schema(
       default: 0,
     },
     delivery_address: {
-      provinsi: { type: String, require: [true, "provinsi harus diisi."] },
-      kabupaten: { type: String, require: [true, "kabupaten harus diisi."] },
-      kecamatan: { type: String, require: [true, "kecamatan harus diisi."] },
-      kelurahan: { type: String, require: [true, "kelurahan harus diisi."] },
+      provinsi: { type: String, required: [true, "provinsi harus diisi"] },
+      kabupaten: { type: String, required: [true, "kabupaten harus diisi"] },
+      kecamatan: { type: String, required: [true, "kecamatan harus diisi"] },
+      kelurahan: { type: String, required: [true, "kelurahan harus diisi"] },
       detail: { type: String },
     },
-
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-
     order_items: [{ type: Schema.Types.ObjectId, ref: "OrderItem" }],
   },
   { timestamps: true }
 );
 
-orderSchema.plugin(AutoIncrement, { inc_field: "order_number" });
+orderSchema.plugin(AuthoIncrement, { inc_field: "order_number" });
 orderSchema.virtual("items_count").get(function () {
   return this.order_items.reduce((total, item) => total + parseInt(item.qty), 0);
 });

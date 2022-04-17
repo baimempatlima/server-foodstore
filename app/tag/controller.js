@@ -5,16 +5,16 @@ const store = async (req, res, next) => {
     let payload = req.body;
     let tag = new Tag(payload);
     await tag.save();
-    return res.json(tag);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
-        error: 1,
-        message: error.message,
-        fields: error.errors,
+    return res.status(200).json(tag);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
+        erros: 1,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
@@ -22,54 +22,42 @@ const update = async (req, res, next) => {
   try {
     let payload = req.body;
     let tag = await Tag.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
-    return res.json(tag);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
-        error: 1,
-        message: error.message,
-        fields: error.errors,
+    return res.status(200).json(tag);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
+        erros: 1,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
 const destroy = async (req, res, next) => {
   try {
     let tag = await Tag.findByIdAndDelete(req.params.id);
-    return res.json(tag);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
-        error: 1,
-        message: error.message,
-        fields: error.errors,
-      });
-    }
-    next(error);
+    return res.status(200).json(tag);
+  } catch (err) {
+    next(err);
   }
 };
 
 const index = async (req, res, next) => {
   try {
     let tag = await Tag.find();
-    return res.json(tag);
-  } catch (error) {
-    if (error && error.name === "ValidationError") {
-      return res.json({
-        error: 1,
-        message: error.message,
-        fields: error.errors,
+    return res.status(200).json(tag);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(200).json({
+        erros: 1,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    next(error);
+    next(err);
   }
 };
 
-module.exports = {
-  store,
-  update,
-  destroy,
-  index,
-};
+module.exports = { store, update, destroy, index };

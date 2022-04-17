@@ -10,49 +10,45 @@ const register = async (req, res, next) => {
     const payload = req.body;
     let user = new User(payload);
     await user.save();
-    return res.json(user);
-  } catch (error) {
-    //1 cek kemungkinan kesalahan terkait validasi
-    if (error && error.name === "ValidationError") {
-      return res.json({
+    return res.status(200).json(user);
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.status(204).json({
         error: 1,
-        message: error.message,
-        fields: error.errors,
+        message: err.message,
+        fields: err.errors,
       });
     }
-    //error lainnya
-    next(error);
+    next(err);
   }
 };
 
 const localStrategy = async (email, password, done) => {
   try {
     let user = await User.findOne({ email }).select("-__v -createdAt -updatedAt -cart_items -token");
-    if (!user) {
-      return done();
-    }
+    if (!user) return done();
     if (bcrypt.compareSync(password, user.password)) {
-      // const { password, ...userWithoutPassword } = user.toJSON();
-      ({ password, ...userWithoutPassword } = user.toJSON());
+      ({ user, ...userWithoutPassword } = user.toJSON());
       return done(null, userWithoutPassword);
     }
-  } catch (error) {
-    done(error, null);
+  } catch (err) {
+    done(err, null);
   }
   done();
 };
 
 const login = async (req, res, next) => {
-  passport.authenticate("local", async function (error, user) {
-    if (error) return next(error);
+  passport.authenticate("local", async function (err, user) {
+    if (err) return next(err);
+    if (!user) return res.status(200).json({ error: 1, message: "email or password incorect" });
 
-    if (!user) return res.json({ error: 1, message: "Email or Password incorrect" });
     let signed = jwt.sign(user, config.secretKey);
+
     await User.findByIdAndUpdate(user._id, { $push: { token: signed } });
 
-    res.json({
-      message: "Login Successfully",
-      user,
+    res.status(200).json({
+      message: "Login successfully",
+      user: { name: user.full_name, email: user.email, role: user.role },
       token: signed,
     });
   })(req, res, next);
@@ -64,30 +60,25 @@ const logout = async (req, res, next) => {
   let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false });
 
   if (!token || !user) {
-    res.json({
+    res.status(200).json({
       error: 1,
-      message: "No User Found !!",
+      message: "No User Found",
     });
   }
-  return res.json({
+  return res.status(200).json({
     error: 0,
-    message: "Logout Berhasil",
+    message: "logout berhasil",
   });
 };
 
 const me = (req, res, next) => {
   if (!req.user) {
-    res.json({
+    res.status(200).json({
       error: 1,
-      message: "You'not Login or Token Expired",
+      message: "you are not login or token expired",
     });
   }
-  req.json(req.user);
+  res.status(200).json(req.user);
 };
-module.exports = {
-  register,
-  localStrategy,
-  login,
-  logout,
-  me,
-};
+
+module.exports = { register, login, localStrategy, logout, me };
