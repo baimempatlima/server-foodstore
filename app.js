@@ -4,7 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const cors = require("cors");
-const { decodeToken } = require("./middleware");
+const { decodeToken } = require("./middlewares");
 
 const productRoute = require("./app/product/router");
 const categoryRoute = require("./app/category/router");
