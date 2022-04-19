@@ -212,8 +212,10 @@ const destroy = async (req, res, next) => {
       .status(200)
 
       .json(product);
-  } catch (err) {}
-  next(err);
+  } catch (err) {
+     next(err);
+  }
+ 
 };
 
 module.exports = { index, store, update, destroy };
