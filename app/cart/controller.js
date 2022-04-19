@@ -17,7 +17,7 @@ const update = async (req, res, next) => {
         qty: item.qty,
       };
     });
-    // await CartItem.deleteMany({user: req.user._id});
+    await CartItem.deleteMany({user: req.user._id});
     await CartItem.bulkWrite(
       cartItems.map((item) => {
         return {
