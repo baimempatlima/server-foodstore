@@ -7,7 +7,7 @@ const Tag = require("../tag/model");
 
 const index = async (req, res, next) => {
   try {
-    let { q = "", category = "", tags = [] } = req.query;
+    let { skip = 0, limit = 10, q = "", category = "", tags = [] } = req.query;
     let criteria = {};
     if (q.length) {
       criteria = { ...criteria, name: { $regex: `${q}`, $options: "i" } };
@@ -20,14 +20,22 @@ const index = async (req, res, next) => {
       // console.log(resultCategory._id)
     }
     if (tags.length) {
-      let tagsResult = await Tag.find({ name: { $in: tags } });
+      const newTags = tags.map(tag => new RegExp(tag, 'i'))
+      let tagsResult = await Tag.find({ name: { $in: newTags } });
       if (tagsResult.length > 0) {
         criteria = { ...criteria, tags: { $in: tagsResult.map((tag) => tag._id) } };
       }
     }
     let count = await Product.find().countDocuments();
 
-    let product = await Product.find(criteria).populate("category").populate("tags");
+    // let product = await Product.find(criteria).populate("category").populate("tags");
+    let product = await Product
+        .find(criteria)
+        .skip(parseInt(skip))
+        .limit(parseInt(limit))
+        .populate('category')
+         .populate('tags');
+ 
     return res.status(200).json({
       data: product,
       count,
