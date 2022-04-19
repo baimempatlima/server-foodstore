@@ -2,18 +2,45 @@ const { subject } = require("@casl/ability");
 const { policyfor } = require("../../utils");
 const DeliveryAddress = require("./model");
 
+// const index = async (req, res, next) => {
+//   try {
+//     let user = req.user;
+//     let address = await DeliveryAddress.find();
+//     if (user.role === "user") {
+//       address = await DeliveryAddress.find({ user: user._id });
+//     }
+//     return res.status(200).json(address);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
+
 const index = async (req, res, next) => {
-  try {
-    let user = req.user;
-    let address = await DeliveryAddress.find();
-    if (user.role === "user") {
-      address = await DeliveryAddress.find({ user: user._id });
+    try {
+
+        let { skip = 0, limit = 10 } = req.query;
+        let count = await DeliveryAddress.find({ user: req.user._id }).countDocuments();
+        let address = await DeliveryAddress
+            .find({ user: req.user._id })
+            .skip(parseInt(skip))
+            .limit(parseInt(limit))
+            .sort('-createdAt');
+        
+        return res.json({ data: address, count });
+
+    } catch (err) {
+        if(err && err.name === 'ValidationError'){
+            return res.json({
+                error: 1,
+                message: err.message,
+                fileds: err.errors
+            });
+        }
+
+        next(err);
     }
-    return res.status(200).json(address);
-  } catch (err) {
-    next(err);
-  }
-};
+}
 
 const store = async (req, res, next) => {
   try {
