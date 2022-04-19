@@ -5,4 +5,12 @@ mongoose.connect(`mongodb+srv://${dbUser}:${dbPass}@${dbHost}/${dbName}?retryWri
 // mongoose.connect(`mongodb://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}?authSource=admin`);
 const db = mongoose.connection;
 
+db.on('open', () => {
+    if(connectionDatabase !== urlLocal) {
+        console.log('connected to the mongodb atlas');
+    } else {
+        console.log('failed');
+    }
+})
+
 module.exports = db;
