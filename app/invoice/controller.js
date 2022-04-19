@@ -31,20 +31,22 @@ const show = async (req, res, next) => {
   }
 };
 
-const index = async (req, res, next) => {
-  try {
-    let user = req.user;
-    let invoice = await Invoice.find().populate("order").populate("user");
-    if (user.role === "user") {
-      invoice = await Invoice.find({ user: user._id }).populate("order").populate("user");
-    }
-    return res.json(invoice);
-  } catch (err) {
-    return res.json({
-      error: 1,
-      message: "Error when getting invoice",
-    });
-  }
-};
+// const index = async (req, res, next) => {
+//   try {
+//     let user = req.user;
+//     let invoice = await Invoice.find().populate("order").populate("user");
+//     if (user.role === "user") {
+//       invoice = await Invoice.find({ user: user._id }).populate("order").populate("user");
+//     }
+//     return res.json(invoice);
+//   } catch (err) {
+//     return res.json({
+//       error: 1,
+//       message: "Error when getting invoice",
+//     });
+//   }
+// };
 
-module.exports = { show, index };
+module.exports = { 
+  show 
+};
