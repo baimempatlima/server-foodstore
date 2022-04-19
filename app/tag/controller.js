@@ -8,7 +8,7 @@ const store = async (req, res, next) => {
     return res.status(200).json(tag);
   } catch (err) {
     if (err && err.name === "ValidationError") {
-      return res.status(200).json({
+      return res.json({
         erros: 1,
         message: err.message,
         fields: err.errors,
@@ -25,7 +25,7 @@ const update = async (req, res, next) => {
     return res.status(200).json(tag);
   } catch (err) {
     if (err && err.name === "ValidationError") {
-      return res.status(200).json({
+      return res.json({
         erros: 1,
         message: err.message,
         fields: err.errors,
@@ -36,13 +36,21 @@ const update = async (req, res, next) => {
 };
 
 const destroy = async (req, res, next) => {
-  try {
-    let tag = await Tag.findByIdAndDelete(req.params.id);
-    return res.status(200).json(tag);
-  } catch (err) {
-    next(err);
-  }
-};
+    try {
+        let tag = await Tags.findByIdAndDelete(req.params.id);
+        return res.json(tag);
+    } catch (err) {
+        if( err && err.name === 'ValidationError' ){
+            return res.json({
+                error: 1,
+                message: err.message,
+                fields: err.errors
+            })
+        }
+
+        next(err)
+    }
+}
 
 const index = async (req, res, next) => {
   try {
@@ -50,7 +58,7 @@ const index = async (req, res, next) => {
     return res.status(200).json(tag);
   } catch (err) {
     if (err && err.name === "ValidationError") {
-      return res.status(200).json({
+      return res.json({
         erros: 1,
         message: err.message,
         fields: err.errors,
