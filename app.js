@@ -40,7 +40,7 @@ app.use("/api", invoiceRoute);
 
 app.use("/", function (req, res) {
   res.render("index", {
-    title: "eduwork API service",
+    title: "Foodstore API service",
   });
 });
 
