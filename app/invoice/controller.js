@@ -5,14 +5,18 @@ const { policyfor } = require("../../utils");
 const show = async (req, res, next) => {
   try {
     let { order_id } = req.params;
-    let invoice = await Invoice.findOne({ order: order_id });
+    // let invoice = await Invoice.findOne({ order: order_id });
+    let invoice = await Invoice
+        .findOne({order: order_id})
+        .populate('order')
+        .populate('user');
     let policy = policyfor(req.user);
     let subjectInvoice = subject("Invoice", {
       ...invoice,
       user_id: invoice.user,
     });
     if (!policy.can("read", subjectInvoice)) {
-      return res.status(200).json({
+      return res.json({
         error: 1,
         message: "anda tidak memiliki akses untuk melihat invoice ini",
       });
@@ -20,7 +24,7 @@ const show = async (req, res, next) => {
     invoice = await Invoice.find({ order: order_id }).populate("order").populate("user");
     return res.status(200).json(invoice);
   } catch (err) {
-    return res.status(200).json({
+    return res.json({
       error: 1,
       message: "Error when getting invoice",
     });
@@ -34,9 +38,9 @@ const index = async (req, res, next) => {
     if (user.role === "user") {
       invoice = await Invoice.find({ user: user._id }).populate("order").populate("user");
     }
-    return res.status(200).json(invoice);
+    return res.json(invoice);
   } catch (err) {
-    return res.status(200).json({
+    return res.json({
       error: 1,
       message: "Error when getting invoice",
     });
