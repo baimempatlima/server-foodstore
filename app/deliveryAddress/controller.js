@@ -15,32 +15,25 @@ const DeliveryAddress = require("./model");
 //   }
 // };
 
-
 const index = async (req, res, next) => {
-    try {
+  try {
+    let { skip = 0, limit = 10 } = req.query;
+    let count = await DeliveryAddress.find({ user: req.user._id }).countDocuments();
+    let address = await DeliveryAddress.find({ user: req.user._id }).skip(parseInt(skip)).limit(parseInt(limit)).sort("-createdAt");
 
-        let { skip = 0, limit = 10 } = req.query;
-        let count = await DeliveryAddress.find({ user: req.user._id }).countDocuments();
-        let address = await DeliveryAddress
-            .find({ user: req.user._id })
-            .skip(parseInt(skip))
-            .limit(parseInt(limit))
-            .sort('-createdAt');
-        
-        return res.json({ data: address, count });
-
-    } catch (err) {
-        if(err && err.name === 'ValidationError'){
-            return res.json({
-                error: 1,
-                message: err.message,
-                fileds: err.errors
-            });
-        }
-
-        next(err);
+    return res.json({ data: address, count });
+  } catch (err) {
+    if (err && err.name === "ValidationError") {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
     }
-}
+
+    next(err);
+  }
+};
 
 const store = async (req, res, next) => {
   try {
@@ -54,7 +47,7 @@ const store = async (req, res, next) => {
       return res.status(200).json({
         error: 1,
         message: err.message,
-        fileds: err.errors,
+        fields: err.errors,
       });
     }
     next(err);
