@@ -9,6 +9,4 @@ router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.get('/me', authController.me)
 
-
-
-module.exports = router;
+module.exports = router;   
