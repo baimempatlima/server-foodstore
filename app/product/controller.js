@@ -20,7 +20,7 @@ const index = async (req, res, next) => {
       // console.log(resultCategory._id)
     }
     if (tags.length) {
-      const newTags = tags.map(tag => new RegExp(tag, 'i'))
+      const newTags = tags.map((tag) => new RegExp(tag, "i"));
       let tagsResult = await Tag.find({ name: { $in: newTags } });
       if (tagsResult.length > 0) {
         criteria = { ...criteria, tags: { $in: tagsResult.map((tag) => tag._id) } };
@@ -29,13 +29,8 @@ const index = async (req, res, next) => {
     let count = await Product.find().countDocuments();
 
     // let product = await Product.find(criteria).populate("category").populate("tags");
-    let product = await Product
-        .find(criteria)
-        .skip(parseInt(skip))
-        .limit(parseInt(limit))
-        .populate('category')
-         .populate('tags');
- 
+    let product = await Product.find(criteria).skip(parseInt(skip)).limit(parseInt(limit)).populate("category").populate("tags");
+
     return res.status(200).json({
       data: product,
       count,
@@ -213,9 +208,8 @@ const destroy = async (req, res, next) => {
 
       .json(product);
   } catch (err) {
-     next(err);
+    next(err);
   }
- 
 };
 
 module.exports = { index, store, update, destroy };
