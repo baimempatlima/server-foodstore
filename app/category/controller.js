@@ -62,5 +62,4 @@ const index = async (req, res, next) => {
     next(err);
   }
 };
-
 module.exports = { store, update, destroy, index };
