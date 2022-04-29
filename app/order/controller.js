@@ -79,23 +79,6 @@ const index = async (req, res, next) => {
   }
 };
 
-// const show = async (req, res, next) => {
-//   try {
-//     // let {skip=0, limit = 10}= req.query;
-//     let { id } = req.params;
-//     // let count = await Order.find({user: req.user_id}).countDocuments();
-//     let orders = await Order.findById(id).populate("order_items").sort("-createdAt");
-//     return res.json(orders);
-//   } catch (err) {
-//     if (err && err.name === "ValidationError") {
-//       return res.json({
-//         erros: 1,
-//         message: err.message,
-//         fields: err.errors,
-//       });
-//     }
-//     next(err);
-//   }
-// };
+
 
 module.exports = { store, index };
